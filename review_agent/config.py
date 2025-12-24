@@ -128,7 +128,7 @@ def load_scan_config(root: str, config_path: Optional[str]) -> ScanConfig:
     if cp.has_option("report", "top_n_dirs"):
         try:
             top_n_dirs = int(cp.get("report", "top_n_dirs").strip())
-        except Exception:
+        except ValueError:
             top_n_dirs = DEFAULT_TOP_N_DIRS
     if top_n_dirs <= 0:
         top_n_dirs = DEFAULT_TOP_N_DIRS
@@ -137,7 +137,7 @@ def load_scan_config(root: str, config_path: Optional[str]) -> ScanConfig:
     if cp.has_option("scan", "hotspot_depth"):
         try:
             hotspot_depth = int(cp.get("scan", "hotspot_depth").strip())
-        except Exception:
+        except ValueError:
             hotspot_depth = DEFAULT_HOTSPOT_DEPTH
     if hotspot_depth <= 0:
         hotspot_depth = DEFAULT_HOTSPOT_DEPTH
