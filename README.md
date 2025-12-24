@@ -35,7 +35,7 @@ This is a **local, offline** CLI tool that performs a **full scan** (not a git d
 
 This tool expects the following directory structure (sibling directories):
 
-```
+```bash
 ./
 ├── platform/          # Open edX Hawthorn codebase to scan
 └── review-agent/       # This repository
