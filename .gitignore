@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Generated reports
+hawthorn_review*
+*.md.tmp
+
+

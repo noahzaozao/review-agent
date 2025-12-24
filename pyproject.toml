@@ -1,0 +1,18 @@
+[project]
+name = "review-agent"
+version = "0.1.0"
+description = "Local, offline baseline risk scanner for Open edX Hawthorn (text-only)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Proprietary" }
+authors = [
+  { name = "Internal" }
+]
+
+# No third-party dependencies (stdlib only).
+dependencies = []
+
+[project.urls]
+spec = "SPEC.md"
+
+
