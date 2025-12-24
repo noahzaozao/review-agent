@@ -1,9 +1,10 @@
 .venv/
 __pycache__/
 *.pyc
+*.egg-info/
 
 # Generated reports
+ai_review_report.md
 hawthorn_review*
 *.md.tmp
-
 

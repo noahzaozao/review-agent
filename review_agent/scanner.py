@@ -2,8 +2,10 @@ import fnmatch
 import os
 from collections import defaultdict
 from datetime import datetime, timezone
+import platform
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
+from . import __version__
 from .rules import minimal_ruleset
 from .types import Rule, ScanConfig, ScanSummary
 
@@ -19,8 +21,14 @@ def _matches_any_glob(posix_path: str, globs: List[str]) -> bool:
     # Ensure consistent matching: no leading "./"
     p = posix_path.lstrip("./")
     for g in globs:
-        if fnmatch.fnmatch(p, g):
-            return True
+        # fnmatch doesn't treat "**/" specially; patterns like "**/.git/**" won't match ".git/...".
+        # To be robust, also try matching without a leading "**/".
+        candidates = [g]
+        if g.startswith("**/"):
+            candidates.append(g[len("**/") :])
+        for gg in candidates:
+            if fnmatch.fnmatch(p, gg):
+                return True
         # Convenience: allow matching directories without trailing /**
         if g.endswith("/**"):
             base = g[:-3]
@@ -157,14 +165,17 @@ def scan_codebase(config: ScanConfig, config_path: Optional[str]) -> ScanSummary
             # Minimal noise reduction: ignore pure comment lines
             if stripped.startswith("#"):
                 continue
+            # v2 rule constraint: only trigger on non-comment, line-start syntax.
+            # We match against the line with leading whitespace removed; rules are expected
+            # to be anchored (via ^) or used with .match()-like semantics.
+            hay = stripped
 
             for rule in rules:
                 for rx in rule.regexes:
-                    # Most rules are line-based; count all matches per line.
-                    matches = rx.findall(line)
-                    if not matches:
+                    # Line-start only: count at most once per regex per line.
+                    if rx.match(hay) is None:
                         continue
-                    per_file_counts[rule.id] += len(matches)
+                    per_file_counts[rule.id] += 1
 
         total_hits_this_file = 0
         file_categories_hit: Set[str] = set()
@@ -207,6 +218,8 @@ def scan_codebase(config: ScanConfig, config_path: Optional[str]) -> ScanSummary
     top_dirs_sorted = [t for t in top_dirs_sorted if t[1] > 0][: config.top_n_dirs]
 
     return ScanSummary(
+        tool_version=__version__,
+        python_version=platform.python_version(),
         root=config.root,
         config_path=config_path,
         started_at_iso=started.isoformat(),
@@ -215,6 +228,8 @@ def scan_codebase(config: ScanConfig, config_path: Optional[str]) -> ScanSummary
         skipped_files=skipped_files,
         pruned_dirs=pruned_dirs_counter[0],
         read_errors=read_errors,
+        top_n_dirs=config.top_n_dirs,
+        hotspot_depth=config.hotspot_depth,
         rule_occurrences=rule_occ,
         rule_files=rule_files,
         dir_occurrences=dict(dir_occ),

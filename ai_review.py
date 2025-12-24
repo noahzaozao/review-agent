@@ -4,6 +4,7 @@ import os
 import sys
 from typing import Optional
 
+from review_agent import __version__
 from review_agent.config import load_scan_config, resolve_loaded_config_path
 from review_agent.report_md import render_markdown
 from review_agent.scanner import scan_codebase
@@ -37,7 +38,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
     if not args.quiet:
         # Short stdout summary (no per-line comments)
         total_hits = sum(summary.rule_occurrences.values())
-        print("== AI Review (offline baseline) ==")
+        print(f"== AI Review (offline baseline) v{__version__} ==")
         print(f"root: {summary.root}")
         print(f"config: {summary.config_path or '(built-in defaults)'}")
         print(f"scanned_py_files: {summary.scanned_files}")

@@ -22,10 +22,14 @@ def render_markdown(summary: ScanSummary) -> str:
     lines.append("")
     lines.append("## Scan metadata")
     lines.append("")
+    lines.append(f"- **version**: `{summary.tool_version}`")
+    lines.append(f"- **python**: `{summary.python_version}`")
     lines.append(f"- **root**: `{summary.root}`")
     lines.append(f"- **config**: `{summary.config_path or '(built-in defaults)'}`")
     lines.append(f"- **started**: `{summary.started_at_iso}`")
     lines.append(f"- **finished**: `{summary.finished_at_iso}`")
+    lines.append(f"- **hotspot_depth**: `{summary.hotspot_depth}`")
+    lines.append(f"- **top_n_dirs**: `{summary.top_n_dirs}`")
     lines.append("")
 
     lines.append("## Scan statistics")
@@ -141,14 +145,9 @@ def render_markdown(summary: ScanSummary) -> str:
         lines.append("(No hits.)")
     lines.append("")
 
-    # Hotspot depth is a config concern; preserve backward-compatible default (3) while
-    # letting the report reflect the actual run behavior.
-    depth_note = ""
-    if summary.top_dirs:
-        # We don't store depth in summary; infer from common prefix segment count is unreliable.
-        # Keep wording generic to avoid misreporting.
-        depth_note = " (bucketed by directory prefix)"
-    lines.append(f"## Top directory hotspots{depth_note} (Top {len(summary.top_dirs)})")
+    lines.append(
+        f"## Top directory hotspots (bucketed by first {summary.hotspot_depth} path segments) (Top {len(summary.top_dirs)})"
+    )
     lines.append("")
     if summary.top_dirs:
         top_rows: List[List[str]] = []

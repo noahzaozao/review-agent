@@ -34,6 +34,9 @@ class ScanConfig:
 
 @dataclass
 class ScanSummary:
+    tool_version: str
+    python_version: str
+
     root: str
     config_path: Optional[str]
     started_at_iso: str
@@ -43,6 +46,10 @@ class ScanSummary:
     skipped_files: int
     pruned_dirs: int
     read_errors: int
+
+    # effective config (for report rendering / traceability)
+    top_n_dirs: int
+    hotspot_depth: int
 
     # rule_id -> total occurrences across all files
     rule_occurrences: Dict[str, int]

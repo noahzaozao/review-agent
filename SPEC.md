@@ -211,6 +211,14 @@ Manual test steps:
 6. (Upgrade) Verify the report includes rollups by `category` and `severity` overall and inside critical directory partitions.
 7. (Upgrade) Ensure new rules (`PY3_NONLOCAL`, `PY3_RAISE_FROM`) only trigger when the syntax appears at the beginning of a non-comment line (low false positives).
 
+### Execution Environment / Constraints
+
+- All scan commands **must** be executed using the `uv run` wrapper to ensure a consistent Python environment:
+
+```bash
+uv run python ai_review.py scan <ROOT_PATH> --out <REPORT_PATH>
+```
+
 Success criteria:
 
 - The tool completes scanning offline with stdlib only and outputs Markdown.
@@ -224,5 +232,3 @@ Success criteria:
   - Backward compatibility:
     - CLI args `scan PATH --config --out --quiet` behave the same as v1.
     - Existing INI keys keep working; new keys are optional with safe defaults.
-
-
