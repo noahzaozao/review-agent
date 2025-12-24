@@ -31,13 +31,27 @@ This is a **local, offline** CLI tool that performs a **full scan** (not a git d
 
 ---
 
+## Directory structure
+
+This tool expects the following directory structure (sibling directories):
+
+```
+./
+├── platform/          # Open edX Hawthorn codebase to scan
+└── review-agent/       # This repository
+```
+
+Place `review-agent` as a sibling directory to the `platform` directory you want to scan.
+
+---
+
 ## Using `uv` (recommended)
 
-From the `review-agent/` directory next to `platform/`:
+From the `review-agent/` directory:
 
 ```bash
 uv venv
-uv run python ai_review.py scan /Users/noahwang/workspace/hawthorn/platform --out hawthorn_review.md
+uv run python ai_review.py scan ../platform --out hawthorn_review.md
 ```
 
 Notes:
@@ -48,10 +62,10 @@ Notes:
 
 ## Quick start
 
-From the `review-agent/` directory next to `platform/`:
+From the `review-agent/` directory:
 
 ```bash
-python3 ai_review.py scan /Users/noahwang/workspace/hawthorn/platform --out hawthorn_review.md
+python3 ai_review.py scan ../platform --out hawthorn_review.md
 ```
 
 Common arguments:
@@ -137,7 +151,7 @@ Configure `[scan] hotspot_depth` to control how many leading path segments are u
 
 ## Minimal manual validation
 1. Smoke test on a small directory: `python3 ai_review.py scan .`
-2. Run on Hawthorn platform root: `python3 ai_review.py scan /path/to/platform --out hawthorn_review.md`
+2. Run on Hawthorn platform root: `python3 ai_review.py scan ../platform --out hawthorn_review.md`
 3. Edit `exclude_dir_globs` in `ai_review.ini`, rerun, and confirm the scanned file count/distribution changes as expected.
 
 ---
