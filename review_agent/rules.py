@@ -12,6 +12,8 @@ def minimal_ruleset() -> List[Rule]:
     rules: List[Rule] = []
 
     # Python 3-only syntax signal: f-strings (including rf/fr combinations).
+    #
+    # v2 constraint: only trigger on non-comment, line-start syntax (scanner matches on lstrip() lines).
     rules.append(
         Rule(
             id="PY3_FSTRING",
@@ -19,7 +21,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="high",
             description="Python 3 f-string prefix (f''/f\"\"\", including rf/fr).",
             regexes=[
-                re.compile(r"""(?<![A-Za-z0-9_])(?:f|rf|fr)(?:'''|\"\"\"|'|")"""),
+                re.compile(r"""(?i)^(?:f|rf|fr)(?:'''|\"\"\"|'|")"""),
             ],
         )
     )
@@ -32,7 +34,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="high",
             description="Python 3 async function definition (async def).",
             regexes=[
-                re.compile(r"^\s*async\s+def\b"),
+                re.compile(r"^async\s+def\b"),
             ],
         )
     )
@@ -45,7 +47,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="medium",
             description="Potential Python 3 await usage (heuristic).",
             regexes=[
-                re.compile(r"\bawait\s+[\w(]"),
+                re.compile(r"^await\b\s*[\w(]"),
             ],
         )
     )
@@ -58,7 +60,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="low",
             description="except ... as e (informational: Python 3-style exception binding).",
             regexes=[
-                re.compile(r"^\s*except\b[^:]*\bas\b\s+[A-Za-z_]\w*\s*:?\s*$"),
+                re.compile(r"^except\b[^:]*\bas\b\s+[A-Za-z_]\w*\s*:?\s*$"),
             ],
         )
     )
@@ -71,7 +73,9 @@ def minimal_ruleset() -> List[Rule]:
             severity="low",
             description="Potential unicode/str boundary: .encode(...).",
             regexes=[
-                re.compile(r"\.encode\s*\("),
+                # Heuristic to avoid matching inside inline comments:
+                # match only before any '#' on the line.
+                re.compile(r"^[^#]*\.encode\s*\("),
             ],
         )
     )
@@ -82,7 +86,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="low",
             description="Potential unicode/str boundary: .decode(...).",
             regexes=[
-                re.compile(r"\.decode\s*\("),
+                re.compile(r"^[^#]*\.decode\s*\("),
             ],
         )
     )
@@ -97,7 +101,7 @@ def minimal_ruleset() -> List[Rule]:
             severity="high",
             description="Python 3-only keyword: nonlocal (anchored).",
             regexes=[
-                re.compile(r"^\s*nonlocal\b"),
+                re.compile(r"^nonlocal\b"),
             ],
         )
     )
@@ -108,7 +112,8 @@ def minimal_ruleset() -> List[Rule]:
             severity="high",
             description="Python 3 exception chaining syntax: raise ... from ... (anchored).",
             regexes=[
-                re.compile(r"^\s*raise\b.+\bfrom\b.+$"),
+                # Avoid matching 'from' inside inline comments by restricting to pre-# text.
+                re.compile(r"^raise\b[^#]*\bfrom\b[^#]*$"),
             ],
         )
     )
