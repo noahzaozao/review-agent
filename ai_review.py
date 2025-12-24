@@ -31,7 +31,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(md)
             f.write("\n")
-    except Exception as e:
+    except OSError as e:
         _die(f"Cannot write report to {out_path}: {e}")
 
     if not args.quiet:
@@ -41,7 +41,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         print(f"root: {summary.root}")
         print(f"config: {summary.config_path or '(built-in defaults)'}")
         print(f"scanned_py_files: {summary.scanned_files}")
-        print(f"pruned_dirs: {getattr(summary, 'pruned_dirs', 0)}")
+        print(f"pruned_dirs: {summary.pruned_dirs}")
         print(f"read_errors: {summary.read_errors}")
         print(f"total_hits: {total_hits}")
         print(f"report: {out_path}")
